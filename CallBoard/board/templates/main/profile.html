@@ -1,0 +1,43 @@
+{% extends 'layout/basic.html' %}
+
+{% load thumbnail %}
+{% load static %}
+
+{% block title %}Профиль пользователя{% endblock %}
+
+{% block content %}
+<h2>Профиль пользователя {{ user.username }}</h2>
+{% if user.first_name and user.last_name %}
+<p>Здравствуйте, {{ user.first_name }} {{ user.last_name }}!</p>
+{% else %}
+<p>Здравствуйте!</p>
+{% endif %}
+<p><a href="{% url 'board:profile_ad_add' %}">Добавить объявление</a></p>
+<h3>Ваши объявления</h3>
+<div class="vstack gap-3 mt-4 mb-4">
+    {% for ad in ads %}
+    <div class="card">
+        {% url 'board:profile_ad_detail' pk=ad.pk as url %}
+        <div class="row p-3">
+            <a class="col-md-2" href="{{ url }}">
+                {% if ad.image %}
+                <img class="img-fluid" src="{% thumbnail ad.image 'default' %}">
+                {% else %}
+                <img class="img-fluid" src="{% static 'main/bg.jpg' %}">
+                {% endif %}
+            </a>
+            <div class="col-md-10 card-body">
+                <h3 class="card-title"><a href="{{ url }}">{{ ad.title }}</a></h3>
+                <div class="card-text mb-2">{{ ad.content }}</div>
+                <p class="card-text fw-bold">{{ ad.price }} руб.</p>
+                <p class="card-text text-end fst-italic">{{ ad.created_at }}</p>
+                <p class="card-text text-end">
+                    <a href="{% url 'board:profile_ad_edit' pk=ad.pk %}">Исправить</a>
+                    <a href="{% url 'board:profile_ad_delete' pk=ad.pk %}">Удалить</a>
+                </p>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

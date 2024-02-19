@@ -1,0 +1,43 @@
+{% extends 'layout/basic.html' %}
+
+{% load thumbnail %}
+{% load static %}
+{% load django_bootstrap5 %}
+
+{% block title %}{{ category }}{% endblock %}
+
+{% block content %}
+<h2 class="mb-2">{{ category }}</h2>
+<form class="row row-cols-md-auto justify-content-end">
+    {% bootstrap_field form.keyword show_label=False wrapper_class='col-12' %}
+    <div class="col-12">
+        {% bootstrap_button 'Искать' %}
+    </div>
+</form>
+{% if ads %}
+<div class="vstack gap-3 my-4">
+    {% for ad in ads %}
+    <div class="card">
+        {% url 'board:ad_detail' category_pk=category.pk pk=ad.pk as url %}
+        <div class="row p-3">
+            <a class="col-md-2" href="{{ url }}{{ all }}">
+                {% if ad.image %}
+                <img class="img-fluid" src="{% thumbnail ad.image 'default' %}">
+                {% else %}
+                <img class="img-fluid" src="{% static 'main/bg.jpg' %}">
+                {% endif %}
+            </a>
+            <div class="col-md-10 card-body">
+                <h3 class="card-title"><a href="{{ url }}{{ all }}">
+                    {{ ad.title }}</a></h3>
+                <div class="card-text mb-2">{{ ad.content }}</div>
+                <p class="card-text fw-bold">{{ ad.price }} руб.</p>
+                <p class="card-text text-end fst-italic">{{ ad.created_at }}</p>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% bootstrap_pagination page url=keyword %}
+{% endif %}
+{% endblock %}

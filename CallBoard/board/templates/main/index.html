@@ -1,0 +1,46 @@
+{% extends 'layout/basic.html' %}
+
+{% load thumbnail %}
+{% load static %}
+
+{% block content %}
+{% if ads %}
+<h2>Свежие объявления</h2>
+<div class="vstack gap-3 mt-4 mb-4">
+<!--    Пагинация-->
+    <div>
+        {% if page.has_previous %}
+        <a href="?page={{ page.previous_page_number }}">&lt;</a>
+        &nbsp;&nbsp;|&nbsp;&nbsp;
+        {% endif %}
+        {{ page.number }} из {{ page.paginator.num_pages }}
+        {% if page.has_next %}
+        &nbsp;&nbsp;|&nbsp;&nbsp;
+        <a href="?page={{ page.next_page_number }}">&gt;</a>
+        {% endif %}
+    </div>
+
+    {% for ad in ads %}
+    <div class="card">
+        {% url 'board:ad_detail' category_pk=ad.category.pk pk=ad.pk as url %}
+        <div class="row p-3">
+            <a class="col-md-2" href="{{ url }}{{ all }}">
+                {% if ad.image %}
+                <img class="img-fluid" src="{% thumbnail ad.image 'default' %}">
+                {% else %}
+                <img class="img-fluid" src="{% static 'main/empty.jpg' %}">
+                {% endif %}
+            </a>
+            <div class="col-md-10 card-body">
+                <h3 class="card-title"><a href="{{ url }}{{ all }}">
+                    {{ ad.title }}</a></h3>
+                <div class="card-text mb-2">{{ ad.content }}</div>
+                <p class="card-text fw-bold">{{ ad.price }} руб.</p>
+                <p class="card-text text-end fst-italic">{{ ad.created_at }}</p>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+{% endblock %}
